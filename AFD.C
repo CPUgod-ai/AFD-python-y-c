@@ -1,40 +1,87 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
-int main() {
-    char cadena[100];
+int es_entero(char *s) {
     int i = 0;
-    int estado = 0;
+    if (s[0] == '\0') return 0;
 
-    printf("Ingrese una cadena: ");
-    scanf("%s", cadena);
+    while (s[i] != '\0') {
+        if (s[i] < '0' || s[i] > '9')
+            return 0;
+        i++;
+    }
+    return 1;
+}
 
-    while (cadena[i] != '\0') {
-        char c = cadena[i];
+int es_id(char *s) {
+    int i = 0;
+    int estado;
 
-        if (estado == 0) {
-            if (isalpha(c))
+    if (s[0] == '\0')
+        return 0;
+
+    if (!isalpha(s[0]))
+        return 0;
+
+    estado = 1;
+    i = 1;
+
+    while (s[i] != '\0') {
+        if (estado == 1) {
+            if (s[i] >= 'a' && s[i] <= 'z')
+                estado = 2;
+            else
+                return 0;
+        }
+        else if (estado == 2) {
+            if (s[i] >= '0' && s[i] <= '9')
                 estado = 1;
             else
-                estado = 2;
+                return 0;
         }
-        else if (estado == 1) {
-            if (isalnum(c))
-                estado = 1;
-            else
-                estado = 2;
-        }
-        else {
-            break;
-        }
-
         i++;
     }
 
-    if (estado == 1)
-        printf("Cadena aceptada\n");
-    else
-        printf("Cadena rechazada\n");
+    return estado == 1;
+}
 
+int acepta(char *s) {
+    if (strcmp(s, "+") == 0)
+        return 1;
+    if (strcmp(s, "++") == 0)
+        return 1;
+    if (es_entero(s))
+        return 1;
+    if (es_id(s))
+        return 1;
+    return 0;
+}
+
+int main(int argc, char *argv[]) {
+    FILE *archivo;
+    char linea[100];
+
+    if (argc < 2) {
+        printf("Uso: afd archivo.txt\n");
+        return 0;
+    }
+
+    archivo = fopen(argv[1], "r");
+    if (archivo == NULL) {
+        printf("No se pudo abrir el archivo\n");
+        return 0;
+    }
+
+    while (fgets(linea, sizeof(linea), archivo)) {
+        linea[strcspn(linea, "\n")] = '\0';
+
+        if (acepta(linea))
+            printf("ACEPTA\n");
+        else
+            printf("NO ACEPTA\n");
+    }
+
+    fclose(archivo);
     return 0;
 }
