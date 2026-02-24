@@ -1,56 +1,77 @@
-def automata_lexico(cadena):
-    tokens = []
-    i = 0
-    estado = 0
-    actual = ""
+import sys
 
-    while i < len(cadena):
-        c = cadena[i]
 
-        if estado == 0:
-            if c.isdigit():
-                estado = 1
-                actual += c
-            elif c.isalpha():
-                estado = 2
-                actual += c
-            elif c in "+-*/":
-                tokens.append(("OPERADOR", c))
-            elif c in "()":
-                tokens.append(("PARENTESIS", c))
-            elif c == " ":
-                pass
-            i += 1
+def es_entero(s):
+    if len(s) == 0:
+        return False
+    for ch in s:
+        if not ('0' <= ch <= '9'):
+            return False
+    return True
 
-        elif estado == 1:
-            if c.isdigit():
-                actual += c
-                i += 1
-            else:
-                tokens.append(("NUMERO", actual))
-                actual = ""
-                estado = 0
 
-        elif estado == 2:
-            if c.isalnum():
-                actual += c
-                i += 1
-            else:
-                tokens.append(("IDENTIFICADOR", actual))
-                actual = ""
-                estado = 0
+def es_id(s):
+    if len(s) == 0:
+        return False
 
-    if actual != "":
+    def es_primera(ch):
+        return ('A' <= ch <= 'Z') or ('a' <= ch <= 'z')
+
+    def es_minuscula(ch):
+        return 'a' <= ch <= 'z'
+
+    def es_digito(ch):
+        return '0' <= ch <= '9'
+
+    if not es_primera(s[0]):
+        return False
+
+    estado = 1
+    i = 1
+
+    while i < len(s):
+        ch = s[i]
+
         if estado == 1:
-            tokens.append(("NUMERO", actual))
+            if es_minuscula(ch):
+                estado = 2
+            else:
+                return False
         elif estado == 2:
-            tokens.append(("IDENTIFICADOR", actual))
+            if es_digito(ch):
+                estado = 1
+            else:
+                return False
+        i += 1
 
-    return tokens
+    return estado == 1
 
 
-entrada = "x = 25 + y * (3 + 4)"
-resultado = automata_lexico(entrada)
+def acepta(s):
+    if s == "+":
+        return True
+    if s == "++":
+        return True
+    if es_entero(s):
+        return True
+    if es_id(s):
+        return True
+    return False
 
-for t in resultado:
-    print(t)
+
+def main():
+    if len(sys.argv) < 2:
+        print("Uso: python afd.py archivo.txt")
+        return
+
+    with open(sys.argv[1], "r", encoding="utf-8") as f:
+        for linea in f:
+            cadena = linea.strip()
+            if acepta(cadena):
+                print("ACEPTA")
+            else:
+                print("NO ACEPTA")
+
+
+if __name__ == "__main__":
+    main()
