@@ -2,40 +2,43 @@
 #include <ctype.h>
 #include <string.h>
 
-int es_entero(char *s) {
+/* Reconoce si la cadena es un entero: [0-9]+ */
+int es_entero(char *cadena) {
     int i = 0;
-    if (s[0] == '\0') return 0;
 
-    while (s[i] != '\0') {
-        if (s[i] < '0' || s[i] > '9')
+    if (cadena[0] == '\0')
+        return 0;
+
+    while (cadena[i] != '\0') {
+        if (cadena[i] < '0' || cadena[i] > '9')
             return 0;
         i++;
     }
     return 1;
 }
 
-int es_id(char *s) {
-    int i = 0;
-    int estado;
+/* Reconoce identificadores:
+   ID = [A-Za-z]([a-z][0-9])*
+*/
+int es_id(char *cadena) {
+    int i = 1;
+    int estado = 1;
 
-    if (s[0] == '\0')
+    if (cadena[0] == '\0')
         return 0;
 
-    if (!isalpha(s[0]))
+    if (!isalpha(cadena[0]))
         return 0;
 
-    estado = 1;
-    i = 1;
-
-    while (s[i] != '\0') {
+    while (cadena[i] != '\0') {
         if (estado == 1) {
-            if (s[i] >= 'a' && s[i] <= 'z')
+            if (cadena[i] >= 'a' && cadena[i] <= 'z')
                 estado = 2;
             else
                 return 0;
         }
         else if (estado == 2) {
-            if (s[i] >= '0' && s[i] <= '9')
+            if (cadena[i] >= '0' && cadena[i] <= '9')
                 estado = 1;
             else
                 return 0;
@@ -46,35 +49,32 @@ int es_id(char *s) {
     return estado == 1;
 }
 
-int acepta(char *s) {
-    if (strcmp(s, "+") == 0)
+/* Verifica si la cadena es aceptada por el AFD */
+int acepta(char *cadena) {
+    if (strcmp(cadena, "+") == 0)
         return 1;
-    if (strcmp(s, "++") == 0)
+    if (strcmp(cadena, "++") == 0)
         return 1;
-    if (es_entero(s))
+    if (es_entero(cadena))
         return 1;
-    if (es_id(s))
+    if (es_id(cadena))
         return 1;
     return 0;
 }
 
-int main(int argc, char *argv[]) {
+int main() {
     FILE *archivo;
     char linea[100];
 
-    if (argc < 2) {
-        printf("Uso: afd archivo.txt\n");
-        return 0;
-    }
-
-    archivo = fopen(argv[1], "r");
+    /* Equivalente a: with open("entrada.txt", "r") */
+    archivo = fopen("entrada.txt", "r");
     if (archivo == NULL) {
-        printf("No se pudo abrir el archivo\n");
-        return 0;
+        printf("No se pudo abrir el archivo entrada.txt\n");
+        return 1;
     }
 
     while (fgets(linea, sizeof(linea), archivo)) {
-        linea[strcspn(linea, "\n")] = '\0';
+        linea[strcspn(linea, "\n")] = '\0';  // quitar salto de línea
 
         if (acepta(linea))
             printf("ACEPTA\n");
