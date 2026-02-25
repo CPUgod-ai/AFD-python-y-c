@@ -1,6 +1,3 @@
-import sys
-
-
 def es_entero(s):
     if len(s) == 0:
         return False
@@ -8,7 +5,6 @@ def es_entero(s):
         if not ('0' <= ch <= '9'):
             return False
     return True
-
 
 def es_id(s):
     if len(s) == 0:
@@ -60,12 +56,8 @@ def acepta(s):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Uso: python afd.py archivo.txt")
-        return
-
-    with open(sys.argv[1], "r", encoding="utf-8") as f:
-        for linea in f:
+    with open("entrada.txt", "r", encoding="utf-8") as archivo:
+        for linea in archivo:
             cadena = linea.strip()
             if acepta(cadena):
                 print("ACEPTA")
