@@ -1,56 +1,64 @@
-def es_entero(s):
-    if len(s) == 0:
+# reconoce si una cadena completa cumple alguno de estos parametros:
+#   ID = [A-Za-z]([a-z][0-9])*
+#   SUMA = +
+#   ENTERO = [0-9]+
+#   INCREMENTO = ++
+
+def es_entero(cadena):
+    if len(cadena) == 0:
         return False
-    for ch in s:
-        if not ('0' <= ch <= '9'):
+    for caracter in cadena:
+        if not ('0' <= caracter <= '9'):
             return False
     return True
 
-def es_id(s):
-    if len(s) == 0:
+
+def es_id(cadena):
+    if len(cadena) == 0:
         return False
 
-    def es_primera(ch):
-        return ('A' <= ch <= 'Z') or ('a' <= ch <= 'z')
+    def es_primera(caracter):
+        return ('A' <= caracter <= 'Z') or ('a' <= caracter <= 'z')
 
-    def es_minuscula(ch):
-        return 'a' <= ch <= 'z'
+    def es_minuscula(caracter):
+        return 'a' <= caracter <= 'z'
 
-    def es_digito(ch):
-        return '0' <= ch <= '9'
+    def es_digito(caracter):
+        return '0' <= caracter <= '9'
 
-    if not es_primera(s[0]):
+    if not es_primera(cadena[0]):
         return False
 
     estado = 1
-    i = 1
+    indice = 1
 
-    while i < len(s):
-        ch = s[i]
+    while indice < len(cadena):
+        caracter = cadena[indice]
 
         if estado == 1:
-            if es_minuscula(ch):
+            if es_minuscula(caracter):
                 estado = 2
             else:
                 return False
         elif estado == 2:
-            if es_digito(ch):
+            if es_digito(caracter):
                 estado = 1
             else:
                 return False
-        i += 1
+
+        indice += 1
 
     return estado == 1
 
 
-def acepta(s):
-    if s == "+":
+def acepta(cadena):
+    if cadena == "+":
         return True
-    if s == "++":
+    if cadena == "++":
         return True
-    if es_entero(s):
+    if es_entero(cadena):
         return True
-    if es_id(s):
+    if es_id(cadena):
         return True
     return False
 
